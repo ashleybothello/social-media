@@ -17,7 +17,8 @@ import CalendarView from "./pages/CalendarView";
 import TrendDiscovery from "./pages/trends/TrendDiscovery";
 import AICoach from "./pages/ai-coach/AICoach";
 import NotFound from "./pages/NotFound";
-
+import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
+import TermsOfService from "./pages/legal/TermsOfService";
 export default function App() {
   return (
     <BrowserRouter>
@@ -26,6 +27,10 @@ export default function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        
+        {/* Legal Pages */}
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfService />} />
 
         {/* Instagram OAuth callback (public — Meta redirects here) */}
         <Route path="/instagram/callback" element={<InstagramCallback />} />
