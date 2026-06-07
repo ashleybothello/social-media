@@ -5,7 +5,7 @@ import { Zap, Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { setAuthData } from '@/store/auth-store';
 import toast from 'react-hot-toast';
 
-const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:8000' : '');
 
 export default function Login() {
   const navigate = useNavigate();

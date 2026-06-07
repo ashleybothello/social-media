@@ -3,7 +3,7 @@
 
 import type { CalendarPost, RoadmapPhase } from '@/store/local-store';
 
-const ML_API_BASE = 'http://localhost:8000';
+const ML_API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:8000' : '');
 
 async function callML<T>(endpoint: string, body: object): Promise<T | null> {
   try {

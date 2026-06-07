@@ -1,6 +1,6 @@
-﻿import { getAuthToken } from "@/store/auth-store";
+import { getAuthToken } from "@/store/auth-store";
 
-const API_BASE = "http://localhost:8000/api";
+const API_BASE = (import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:8000" : "")) + "/api";
 
 async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
   const token = getAuthToken();

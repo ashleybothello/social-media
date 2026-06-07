@@ -1,4 +1,4 @@
-﻿import { motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Instagram, CheckCircle2, AlertCircle, ExternalLink, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -13,7 +13,7 @@ export default function InstagramConnect() {
 
   const handleConnect = () => {
     // Will be wired to backend OAuth URL after Meta setup
-    const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+    const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:8000" : "");
     fetch(`${API_BASE}/api/instagram/connect`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("aix_access_token") ?? ""}` },
     })

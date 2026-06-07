@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { motion } from "framer-motion";
 import { Sparkles, CalendarDays, Zap, Loader2 } from "lucide-react";
@@ -12,7 +12,8 @@ export default function ContentStrategy() {
   const generateIdeas = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/api/content/reels", {
+      const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:8000" : "");
+      const res = await fetch(`${API_BASE}/api/content/reels`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ industry, focus })

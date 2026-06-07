@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Loader2, AlertCircle, Instagram, ChevronRight, Zap } from "lucide-react";
 import toast from "react-hot-toast";
 
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:8000" : "");
 
 export default function InstagramCallback() {
   const [searchParams] = useSearchParams();
