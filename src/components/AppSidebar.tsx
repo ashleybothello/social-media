@@ -5,21 +5,28 @@ import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, Instagram, Sparkles, Wand2, User, BarChart3,
   Users, Calendar, TrendingUp, MessageSquareText, Settings,
-  ChevronLeft, ChevronRight, LogOut, Zap, Bell,
+  ChevronLeft, ChevronRight, LogOut, Zap, Bell, Youtube, Linkedin, Bot
 } from "lucide-react";
 import { clearAuthData } from "@/store/auth-store";
 
-const navGroups = [
   {
     label: "Overview",
     items: [
       { label: "Dashboard",         icon: LayoutDashboard,     path: "/dashboard" },
+    ],
+  },
+  {
+    label: "Platforms",
+    items: [
       { label: "Instagram",         icon: Instagram,            path: "/instagram" },
+      { label: "YouTube",           icon: Youtube,              path: "#", disabled: true },
+      { label: "LinkedIn",          icon: Linkedin,             path: "#", disabled: true },
     ],
   },
   {
     label: "AI Tools",
     items: [
+      { label: "Global AI Chatbot", icon: Bot,                  path: "#", disabled: true },
       { label: "AI Insights",       icon: Sparkles,             path: "/insights" },
       { label: "Content Studio",    icon: Wand2,                path: "/content-studio" },
       { label: "Profile Optimizer", icon: User,                 path: "/profile-optimizer" },
@@ -98,31 +105,58 @@ export default function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
               )}
             </AnimatePresence>
             <div className="space-y-0.5">
-              {group.items.map((item) => (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  title={collapsed ? item.label : undefined}
-                  className={({ isActive }) =>
-                    cn("nav-item", isActive && "active", collapsed && "justify-center px-0")
-                  }
-                >
-                  <item.icon size={18} strokeWidth={1.8} className="shrink-0" />
-                  <AnimatePresence>
-                    {!collapsed && (
-                      <motion.span
-                        initial={{ opacity: 0, x: -8 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -8 }}
-                        transition={{ duration: 0.15 }}
-                        className="whitespace-nowrap text-sm"
-                      >
-                        {item.label}
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </NavLink>
-              ))}
+              {group.items.map((item) => {
+                if (item.disabled) {
+                  return (
+                    <div
+                      key={item.label}
+                      title={collapsed ? `${item.label} (Coming Soon)` : undefined}
+                      className={cn("nav-item opacity-50 cursor-not-allowed", collapsed && "justify-center px-0")}
+                    >
+                      <item.icon size={18} strokeWidth={1.8} className="shrink-0" />
+                      <AnimatePresence>
+                        {!collapsed && (
+                          <motion.span
+                            initial={{ opacity: 0, x: -8 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -8 }}
+                            transition={{ duration: 0.15 }}
+                            className="whitespace-nowrap text-sm flex items-center justify-between w-full"
+                          >
+                            <span>{item.label}</span>
+                            <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-sm bg-brand/20 text-brand ml-2">Soon</span>
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  );
+                }
+                return (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    title={collapsed ? item.label : undefined}
+                    className={({ isActive }) =>
+                      cn("nav-item", isActive && "active", collapsed && "justify-center px-0")
+                    }
+                  >
+                    <item.icon size={18} strokeWidth={1.8} className="shrink-0" />
+                    <AnimatePresence>
+                      {!collapsed && (
+                        <motion.span
+                          initial={{ opacity: 0, x: -8 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -8 }}
+                          transition={{ duration: 0.15 }}
+                          className="whitespace-nowrap text-sm"
+                        >
+                          {item.label}
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </NavLink>
+                );
+              })}
             </div>
           </div>
         ))}

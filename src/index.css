@@ -5,44 +5,80 @@
 /* ─── CSS Custom Properties (HSL format for Tailwind) ─── */
 @layer base {
   :root {
-    --background:         222 20% 5%;
-    --foreground:         210 20% 95%;
-    --card:               222 18% 8%;
-    --card-foreground:    210 20% 95%;
-    --popover:            222 18% 8%;
-    --popover-foreground: 210 20% 95%;
+    --background:         0 0% 100%;
+    --foreground:         222 47% 11%;
+    --card:               0 0% 100%;
+    --card-foreground:    222 47% 11%;
+    --popover:            0 0% 100%;
+    --popover-foreground: 222 47% 11%;
     --primary:            249 87% 69%;
     --primary-foreground: 240 20% 98%;
-    --secondary:          222 16% 13%;
-    --secondary-foreground:210 15% 70%;
-    --muted:              222 16% 13%;
-    --muted-foreground:   215 12% 45%;
-    --accent:             249 70% 60%;
-    --accent-foreground:  240 20% 98%;
-    --destructive:        0 72% 51%;
-    --destructive-foreground: 0 0% 100%;
-    --border:             222 16% 14%;
-    --input:              222 16% 14%;
+    --secondary:          210 40% 96.1%;
+    --secondary-foreground:222 47% 11%;
+    --muted:              210 40% 96.1%;
+    --muted-foreground:   215.4 16.3% 46.9%;
+    --accent:             210 40% 96.1%;
+    --accent-foreground:  222 47% 11%;
+    --destructive:        0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border:             214.3 31.8% 91.4%;
+    --input:              214.3 31.8% 91.4%;
     --ring:               249 87% 69%;
     --radius:             0.75rem;
 
-    /* Brand custom vars */
+    /* Brand custom vars (Light Mode) */
     --brand-purple:       124 110 245;
     --brand-violet:       168 85 247;
-    --surface-1:          #0d0d12;
-    --surface-2:          #111118;
-    --surface-3:          #17171f;
-    --surface-4:          #1e1e28;
-    --border-subtle:      rgba(255, 255, 255, 0.06);
-    --border-default:     rgba(255, 255, 255, 0.09);
-    --border-strong:      rgba(255, 255, 255, 0.15);
-    --text-primary:       #f1f1f4;
-    --text-secondary:     #9898a8;
-    --text-muted:         #5a5a72;
+    --surface-1:          #f8fafc; /* Slate 50 */
+    --surface-2:          #ffffff;
+    --surface-3:          #f1f5f9; /* Slate 100 */
+    --surface-4:          #e2e8f0; /* Slate 200 */
+    --border-subtle:      rgba(0, 0, 0, 0.05);
+    --border-default:     rgba(0, 0, 0, 0.08);
+    --border-strong:      rgba(0, 0, 0, 0.15);
+    --text-primary:       #0f172a; /* Slate 900 */
+    --text-secondary:     #475569; /* Slate 600 */
+    --text-muted:         #64748b; /* Slate 500 */
     --success:            #10b981;
     --warning:            #f59e0b;
     --danger:             #ef4444;
     --info:               #3b82f6;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background:         222 20% 5%;
+      --foreground:         210 20% 95%;
+      --card:               222 18% 8%;
+      --card-foreground:    210 20% 95%;
+      --popover:            222 18% 8%;
+      --popover-foreground: 210 20% 95%;
+      --primary:            249 87% 69%;
+      --primary-foreground: 240 20% 98%;
+      --secondary:          222 16% 13%;
+      --secondary-foreground:210 15% 70%;
+      --muted:              222 16% 13%;
+      --muted-foreground:   215 12% 45%;
+      --accent:             249 70% 60%;
+      --accent-foreground:  240 20% 98%;
+      --destructive:        0 72% 51%;
+      --destructive-foreground: 0 0% 100%;
+      --border:             222 16% 14%;
+      --input:              222 16% 14%;
+      --ring:               249 87% 69%;
+
+      /* Brand custom vars (Dark Mode) */
+      --surface-1:          #0f1115;
+      --surface-2:          #14161b;
+      --surface-3:          #1b1e24;
+      --surface-4:          #23272f;
+      --border-subtle:      rgba(255, 255, 255, 0.04);
+      --border-default:     rgba(255, 255, 255, 0.08);
+      --border-strong:      rgba(255, 255, 255, 0.12);
+      --text-primary:       #f8fafc;
+      --text-secondary:     #94a3b8;
+      --text-muted:         #64748b;
+    }
   }
 
   * {
@@ -51,7 +87,6 @@
   }
 
   html {
-    color-scheme: dark;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -77,15 +112,14 @@
   }
 
   ::selection {
-    background: rgba(124, 110, 245, 0.3);
-    color: white;
+    background: rgba(59, 130, 246, 0.2); /* Soft blue selection */
+    color: var(--text-primary);
   }
 
-  /* Scrollbar styling */
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+  ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 }
 
 /* ─── Component Layer ─── */
@@ -130,13 +164,13 @@
   /* Brand button */
   .btn-brand {
     @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium text-white transition-all duration-200;
-    background: linear-gradient(135deg, #7c6ef5 0%, #8b5cf6 100%);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.3), 0 0 0 1px rgba(124,110,245,0.4), 0 4px 16px rgba(124,110,245,0.2);
+    background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); /* Instagram gradient */
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1), 0 0 0 1px rgba(220,39,67,0.2), 0 4px 16px rgba(220,39,67,0.15);
   }
 
   .btn-brand:hover {
-    background: linear-gradient(135deg, #8b7cf8 0%, #9d6df9 100%);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.3), 0 0 0 1px rgba(124,110,245,0.5), 0 6px 20px rgba(124,110,245,0.3);
+    background: linear-gradient(135deg, #f5a24b 0%, #eb7851 25%, #e13a53 50%, #d43775 75%, #c82997 100%);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1), 0 0 0 1px rgba(220,39,67,0.3), 0 6px 20px rgba(220,39,67,0.25);
     transform: translateY(-1px);
   }
 

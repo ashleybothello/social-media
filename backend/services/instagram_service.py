@@ -108,10 +108,23 @@ async def get_instagram_media(ig_user_id: str, access_token: str, limit: int = 5
             raise HTTPException(status_code=400, detail=f"Failed to fetch IG media: {response.text}")
         return response.json().get("data", [])
 
-async def get_media_insights(media_id: str, access_token: str) -> dict:
-    url = f"{GRAPH_URL}/{media_id}/insights"
+async def get_instagram_stories(ig_user_id: str, access_token: str) -> list:
+    url = f"{GRAPH_URL}/{ig_user_id}/stories"
     params = {
-        "metric": "impressions,reach,saved,shares",
+        "fields": "id,caption,media_type,media_url,permalink,thumbnail_url,timestamp",
+        "access_token": access_token
+    }
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, params=params)
+        if response.status_code != 200:
+            return [] # Fail gracefully if stories permission or data is unavailable
+        return response.json().get("data", [])
+
+async def get_media_insights(media_id: str, access_token: str, is_story: bool = False) -> dict:
+    url = f"{GRAPH_URL}/{media_id}/insights"
+    metrics = "impressions,reach,replies" if is_story else "impressions,reach,saved,shares"
+    params = {
+        "metric": metrics,
         "access_token": access_token
     }
     async with httpx.AsyncClient() as client:
