@@ -3,12 +3,16 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar,
 } from "recharts";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Users, Eye, TrendingUp, Heart, UserCheck, Percent,
   ArrowUpRight, ArrowDownRight, RefreshCw, Instagram, Sparkles, Zap,
+  Loader2, AlertCircle
 } from "lucide-react";
-import { demoAnalytics, demoStats, demoProfile } from "@/lib/demoData";
 import { formatNumber, formatPercent, formatDate } from "@/lib/utils";
+
+const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:8000" : "");
 
 // ─── Custom Tooltip ───────────────────────────────────────────────────────────
 function ChartTooltip({ active, payload, label }: any) {
@@ -67,17 +71,83 @@ function StatCard({ label, value, change, icon: Icon, suffix = "", delay = 0 }: 
   );
 }
 
-// ─── Chart data (last 30 days) ────────────────────────────────────────────────
-const chartData = demoAnalytics.slice(-30).map((s) => ({
-  date:        formatDate(s.date),
-  followers:   s.followers,
-  reach:       s.reach,
-  impressions: s.impressions,
-  engagement:  s.engagement_rate,
-}));
-
-// ─── Dashboard ────────────────────────────────────────────────────────────────
 export default function Dashboard() {
+  const navigate = useNavigate();
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchDashboardData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem("aix_access_token") ?? "";
+      const res = await fetch(`${API_BASE}/api/instagram/dashboard`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.status === 404) {
+        setError("NOT_CONNECTED");
+      } else if (!res.ok) {
+        throw new Error("Failed to fetch data");
+      } else {
+        const json = await res.json();
+        // Format dates
+        json.chartData = json.chartData.map((d: any) => ({
+          ...d,
+          date: formatDate(d.date)
+        }));
+        setData(json);
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="page-container flex items-center justify-center min-h-[50vh]">
+        <Loader2 className="animate-spin text-brand" size={32} />
+      </div>
+    );
+  }
+
+  if (error === "NOT_CONNECTED") {
+    return (
+      <div className="page-container flex flex-col items-center justify-center min-h-[70vh] text-center">
+        <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6" style={{ background: "linear-gradient(45deg, #f09433, #bc1888)" }}>
+          <Instagram size={32} color="white" />
+        </div>
+        <h1 className="text-2xl font-bold mb-2 text-primary">Not yet connected to Instagram</h1>
+        <p className="text-secondary mb-8 max-w-md">
+          Connect your Instagram Professional account to unlock AI-powered analytics, insights, and growth tracking.
+        </p>
+        <button onClick={() => navigate("/instagram/connect")} className="btn-brand">
+          <Instagram size={18} />
+          Connect Instagram
+        </button>
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="page-container flex flex-col items-center justify-center min-h-[50vh]">
+        <AlertCircle className="text-danger mb-4" size={32} />
+        <h2 className="text-xl font-bold text-danger mb-2">Failed to load dashboard</h2>
+        <p className="text-secondary">{error}</p>
+        <button onClick={fetchDashboardData} className="btn-ghost mt-4">Try again</button>
+      </div>
+    );
+  }
+
+  const { profile, stats, chartData } = data;
+
   return (
     <div className="page-container">
       {/* Header */}
@@ -92,16 +162,16 @@ export default function Dashboard() {
             Dashboard
           </h1>
           <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
-            Overview of <strong style={{ color: "#a89bf8" }}>@{demoProfile.username}</strong>
-            <span className="badge-brand ml-2">Demo Mode</span>
+            Overview of <strong style={{ color: "#a89bf8" }}>@{profile.username}</strong>
+            <span className="badge-success ml-2">Connected</span>
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <a href="/instagram/connect" className="btn-ghost">
+          <button onClick={() => navigate("/instagram/connect")} className="btn-ghost">
             <Instagram size={16} />
-            <span className="hidden sm:inline">Connect Instagram</span>
-          </a>
-          <button className="btn-ghost">
+            <span className="hidden sm:inline">Reconnect</span>
+          </button>
+          <button onClick={fetchDashboardData} className="btn-ghost">
             <RefreshCw size={16} />
           </button>
         </div>
@@ -109,12 +179,12 @@ export default function Dashboard() {
 
       {/* Stat Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-8">
-        <StatCard label="Followers"       value={formatNumber(demoStats.followers.value)}       change={demoStats.followers.change}       icon={Users}     delay={0.05} />
-        <StatCard label="Reach"           value={formatNumber(demoStats.reach.value)}            change={demoStats.reach.change}           icon={Eye}       delay={0.10} />
-        <StatCard label="Impressions"     value={formatNumber(demoStats.impressions.value)}      change={demoStats.impressions.change}     icon={TrendingUp} delay={0.15} />
-        <StatCard label="Engagement Rate" value={demoStats.engagement_rate.value.toFixed(1)}    change={demoStats.engagement_rate.change} icon={Heart}     delay={0.20} suffix="%" />
-        <StatCard label="Profile Visits"  value={formatNumber(demoStats.profile_visits.value)}  change={demoStats.profile_visits.change}  icon={UserCheck} delay={0.25} />
-        <StatCard label="Growth %"        value={`+${demoStats.growth_percent.value}`}          change={demoStats.growth_percent.change}  icon={Percent}   delay={0.30} suffix="%" />
+        <StatCard label="Followers"       value={formatNumber(stats.followers.value)}       change={stats.followers.change}       icon={Users}     delay={0.05} />
+        <StatCard label="Reach"           value={formatNumber(stats.reach.value)}            change={stats.reach.change}           icon={Eye}       delay={0.10} />
+        <StatCard label="Impressions"     value={formatNumber(stats.impressions.value)}      change={stats.impressions.change}     icon={TrendingUp} delay={0.15} />
+        <StatCard label="Engagement Rate" value={stats.engagement_rate.value.toFixed(1)}    change={stats.engagement_rate.change} icon={Heart}     delay={0.20} suffix="%" />
+        <StatCard label="Profile Visits"  value={formatNumber(stats.profile_visits.value)}  change={stats.profile_visits.change}  icon={UserCheck} delay={0.25} />
+        <StatCard label="Growth %"        value={`+${stats.growth_percent.value}`}          change={stats.growth_percent.change}  icon={Percent}   delay={0.30} suffix="%" />
       </div>
 
       {/* Charts Row 1 */}
@@ -131,7 +201,7 @@ export default function Dashboard() {
               <h3 className="section-title text-base">Follower Growth</h3>
               <p className="text-xs" style={{ color: "var(--text-muted)" }}>Last 30 days</p>
             </div>
-            <span className="badge-success">+{demoStats.followers.change}%</span>
+            <span className="badge-success">+{stats.followers.change}%</span>
           </div>
           <ResponsiveContainer width="100%" height={200}>
             <AreaChart data={chartData} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
@@ -162,7 +232,7 @@ export default function Dashboard() {
               <h3 className="section-title text-base">Engagement Rate</h3>
               <p className="text-xs" style={{ color: "var(--text-muted)" }}>Daily avg</p>
             </div>
-            <span className="badge-brand">4.2%</span>
+            <span className="badge-brand">{stats.engagement_rate.value.toFixed(1)}%</span>
           </div>
           <ResponsiveContainer width="100%" height={200}>
             <AreaChart data={chartData} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
@@ -196,7 +266,7 @@ export default function Dashboard() {
               <h3 className="section-title text-base">Reach</h3>
               <p className="text-xs" style={{ color: "var(--text-muted)" }}>Unique accounts reached</p>
             </div>
-            <span className="badge-success">+{demoStats.reach.change}%</span>
+            <span className="badge-success">+{stats.reach.change}%</span>
           </div>
           <ResponsiveContainer width="100%" height={180}>
             <BarChart data={chartData.filter((_, i) => i % 3 === 0)} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
@@ -221,7 +291,7 @@ export default function Dashboard() {
               <h3 className="section-title text-base">Impressions</h3>
               <p className="text-xs" style={{ color: "var(--text-muted)" }}>Total content views</p>
             </div>
-            <span className="badge-success">+{demoStats.impressions.change}%</span>
+            <span className="badge-success">+{stats.impressions.change}%</span>
           </div>
           <ResponsiveContainer width="100%" height={180}>
             <BarChart data={chartData.filter((_, i) => i % 3 === 0)} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
