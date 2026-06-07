@@ -1,0 +1,50 @@
+{
+  "default": [
+    "Building Authority", "Community Growth", "Content Mastery", "Brand Amplification",
+    "Conversion Sprint", "Trust Building", "Audience Deep-Dive", "Viral Reach",
+    "Loyalty Loop", "Revenue Engine", "Engagement Boost", "Awareness Blitz"
+  ],
+  "SaaS": [
+    "Product-Led Growth", "Developer Relations", "Success Stories Sprint",
+    "Feature Launch Blitz", "Thought Leadership Push", "Case Study Campaign",
+    "Onboarding Excellence", "Integration Showcase"
+  ],
+  "Fitness": [
+    "Transformation Stories", "30-Day Challenge", "Nutrition Science Hub",
+    "Community Spotlight", "Expert Collab Series", "Mindset Mastery Month",
+    "Workout of the Week", "Recovery & Wellness"
+  ],
+  "E-commerce": [
+    "Product Storytelling", "Social Proof Wave", "Seasonal Collection Drop",
+    "Behind the Brand", "Flash Sale Campaign", "Customer UGC Month",
+    "Unboxing Experience", "Loyalty Rewards Push"
+  ],
+  "Education": [
+    "Knowledge Nuggets", "Student Spotlight", "Live Learning Series",
+    "Myth Busters Campaign", "Career Pathways", "Expert Interviews"
+  ],
+  "Food": [
+    "Recipe Reel Series", "Farm to Fork Stories", "Chef Spotlight",
+    "Seasonal Menu Drop", "Food Science Fun", "Community Cook-Along"
+  ],
+  "Fashion": [
+    "Style Edit Series", "Sustainable Fashion", "Trend Forecast",
+    "Behind the Seams", "Capsule Wardrobe Challenge", "Brand Heritage Stories"
+  ],
+  "Tech": [
+    "Innovation Showcase", "Tech Teardown", "Future Trends",
+    "Developer Spotlight", "Use Case Deep-Dive", "Product Roadmap Reveal"
+  ],
+  "Real Estate": [
+    "Market Insights", "Property Showcase", "Neighborhood Guide",
+    "First-Time Buyer Tips", "Investment Strategy", "Agent Life Diaries"
+  ],
+  "Finance": [
+    "Money Mindset Monday", "Investment 101", "Budget Breakdown",
+    "Market Watch", "Financial Freedom Series", "Expert AMA"
+  ],
+  "Health": [
+    "Wellness Wednesday", "Mental Health Matters", "Nutrition Deep-Dive",
+    "Health Myth Busters", "Expert Q&A", "Self-Care Sunday"
+  ]
+}
