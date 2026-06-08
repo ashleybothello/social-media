@@ -123,17 +123,26 @@ async def get_instagram_stories(ig_user_id: str, access_token: str) -> list:
 async def get_media_insights(media_id: str, access_token: str, media_type: str = "IMAGE", is_story: bool = False) -> dict:
     url = f"{GRAPH_URL}/{media_id}/insights"
     
-    metrics_to_try = ["impressions,reach,saved,shares", "impressions,reach,saved"]
+    # Try views (v22.0+) first, then fallback to old impressions
+    metrics_to_try = [
+        "views,reach,saved,shares", 
+        "views,reach,saved",
+        "impressions,reach,saved,shares", 
+        "impressions,reach,saved"
+    ]
     
     if is_story:
-        metrics_to_try = ["impressions,reach,replies"]
+        metrics_to_try = ["replies,reach", "impressions,reach,replies", "views,reach,replies"]
     elif media_type == "VIDEO":
         metrics_to_try = [
             "plays,reach,saved,shares", 
+            "views,reach,saved,shares",
             "impressions,reach,saved,video_views"
         ]
     elif media_type == "CAROUSEL_ALBUM":
         metrics_to_try = [
+            "views,reach,saved,shares",
+            "views,reach,saved",
             "impressions,reach,saved,shares", 
             "carousel_album_impressions,carousel_album_reach,carousel_album_saved",
             "impressions,reach,saved"
@@ -153,7 +162,7 @@ async def get_media_insights(media_id: str, access_token: str, media_type: str =
                 for item in data:
                     name = item["name"]
                     # Map odd metric names to standard names
-                    if "plays" in name or "carousel_album_impressions" in name:
+                    if "plays" in name or "carousel_album_impressions" in name or "views" == name:
                         name = "impressions"
                     elif "carousel_album_reach" in name:
                         name = "reach"
