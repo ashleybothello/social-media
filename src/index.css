@@ -67,14 +67,14 @@
       --input:              222 16% 14%;
       --ring:               249 87% 69%;
 
-      /* Brand custom vars (Dark Mode) */
-      --surface-1:          #0f1115;
-      --surface-2:          #14161b;
-      --surface-3:          #1b1e24;
-      --surface-4:          #23272f;
-      --border-subtle:      rgba(255, 255, 255, 0.04);
-      --border-default:     rgba(255, 255, 255, 0.08);
-      --border-strong:      rgba(255, 255, 255, 0.12);
+      /* Brand custom vars (Dark Mode - Pure Neutral/Slate, no purple) */
+      --surface-1:          #020617; /* Slate 950 */
+      --surface-2:          #0f172a; /* Slate 900 */
+      --surface-3:          #1e293b; /* Slate 800 */
+      --surface-4:          #334155; /* Slate 700 */
+      --border-subtle:      rgba(255, 255, 255, 0.05);
+      --border-default:     rgba(255, 255, 255, 0.1);
+      --border-strong:      rgba(255, 255, 255, 0.2);
       --text-primary:       #f8fafc;
       --text-secondary:     #94a3b8;
       --text-muted:         #64748b;

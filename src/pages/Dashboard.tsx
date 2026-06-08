@@ -105,6 +105,23 @@ export default function Dashboard() {
     }
   };
 
+  const handleSyncAndRefresh = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("aix_access_token") ?? "";
+      // Force sync from Facebook first
+      await fetch(`${API_BASE}/api/instagram/sync`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      // Then re-fetch dashboard data
+      await fetchDashboardData();
+    } catch (err: any) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchDashboardData();
   }, []);
@@ -171,7 +188,7 @@ export default function Dashboard() {
             <Instagram size={16} />
             <span className="hidden sm:inline">Reconnect</span>
           </button>
-          <button onClick={fetchDashboardData} className="btn-ghost">
+          <button onClick={handleSyncAndRefresh} className="btn-ghost">
             <RefreshCw size={16} />
           </button>
         </div>
