@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { clearAuthData } from "@/store/auth-store";
 
+const navGroups = [
   {
     label: "Overview",
     items: [
