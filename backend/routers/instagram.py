@@ -349,7 +349,12 @@ async def sync_instagram_data(db: AsyncSession, current_user: User):
             await db.flush()
             
         # Insights for media
-        insights_data = await instagram_service.get_media_insights(m_id, access_token, is_story=m_item.get("is_story", False))
+        insights_data = await instagram_service.get_media_insights(
+            media_id=m_id, 
+            access_token=access_token, 
+            media_type=m_item.get("media_type", "IMAGE"),
+            is_story=m_item.get("is_story", False)
+        )
         if insights_data:
             ins_result = await db.execute(select(InstagramInsight).where(InstagramInsight.media_id == media_obj.id))
             insight_obj = ins_result.scalars().first()

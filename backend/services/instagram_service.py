@@ -120,20 +120,50 @@ async def get_instagram_stories(ig_user_id: str, access_token: str) -> list:
             return [] # Fail gracefully if stories permission or data is unavailable
         return response.json().get("data", [])
 
-async def get_media_insights(media_id: str, access_token: str, is_story: bool = False) -> dict:
+async def get_media_insights(media_id: str, access_token: str, media_type: str = "IMAGE", is_story: bool = False) -> dict:
     url = f"{GRAPH_URL}/{media_id}/insights"
-    metrics = "impressions,reach,replies" if is_story else "impressions,reach,saved,shares"
-    params = {
-        "metric": metrics,
-        "access_token": access_token
-    }
+    
+    metrics_to_try = ["impressions,reach,saved,shares", "impressions,reach,saved"]
+    
+    if is_story:
+        metrics_to_try = ["impressions,reach,replies"]
+    elif media_type == "VIDEO":
+        metrics_to_try = [
+            "plays,reach,saved,shares", 
+            "impressions,reach,saved,video_views"
+        ]
+    elif media_type == "CAROUSEL_ALBUM":
+        metrics_to_try = [
+            "impressions,reach,saved,shares", 
+            "carousel_album_impressions,carousel_album_reach,carousel_album_saved",
+            "impressions,reach,saved"
+        ]
+
     async with httpx.AsyncClient() as client:
-        response = await client.get(url, params=params)
-        if response.status_code != 200:
-            # Some media (like old posts) might not have these insights available, handle gracefully
-            return {}
-        data = response.json().get("data", [])
-        insights = {}
-        for item in data:
-            insights[item["name"]] = item["values"][0]["value"]
-        return insights
+        for metrics in metrics_to_try:
+            params = {
+                "metric": metrics,
+                "access_token": access_token
+            }
+            response = await client.get(url, params=params)
+            
+            if response.status_code == 200:
+                data = response.json().get("data", [])
+                insights = {}
+                for item in data:
+                    name = item["name"]
+                    # Map odd metric names to standard names
+                    if "plays" in name or "carousel_album_impressions" in name:
+                        name = "impressions"
+                    elif "carousel_album_reach" in name:
+                        name = "reach"
+                    elif "carousel_album_saved" in name:
+                        name = "saved"
+                        
+                    insights[name] = item["values"][0]["value"]
+                return insights
+            else:
+                print(f"DEBUG: Failed insights for {media_id} with {metrics}. Response: {response.text}")
+
+        # If all combinations failed, return empty to not break the sync
+        return {}
