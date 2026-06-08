@@ -143,12 +143,12 @@ async def get_dashboard_data(db: AsyncSession = Depends(get_db), current_user: U
     if not profile:
         raise HTTPException(status_code=404, detail="Profile data not synced yet")
         
-    # 3. Get Media (latest 10)
+    # 3. Get Media (latest 50)
     media_result = await db.execute(
         select(InstagramMedia)
         .where(InstagramMedia.profile_id == profile.id)
         .order_by(InstagramMedia.timestamp.desc())
-        .limit(10)
+        .limit(50)
     )
     media_items = media_result.scalars().all()
     
@@ -161,8 +161,12 @@ async def get_dashboard_data(db: AsyncSession = Depends(get_db), current_user: U
     )
     insights = insights_result.scalars().all()
     
-    # Process top posts
-    top_posts = []
+    # Process categorized posts
+    reels = []
+    stories = []
+    carousels = []
+    photos = []
+    
     total_reach = 0
     total_impressions = 0
     total_engagement = 0
@@ -175,17 +179,37 @@ async def get_dashboard_data(db: AsyncSession = Depends(get_db), current_user: U
         total_impressions += m_insight.impressions if m_insight else 0
         total_engagement += m_insight.engagement if m_insight else 0
         
-        top_posts.append({
+        post_data = {
+            "id": m.id,
             "type": m.media_type,
             "caption": m.caption or "",
             "likes": m.like_count,
             "comments": m.comments_count,
             "reach": reach,
-            "timestamp": m.timestamp.isoformat()
-        })
+            "impressions": m_insight.impressions if m_insight else 0,
+            "engagement": m_insight.engagement if m_insight else 0,
+            "timestamp": m.timestamp.isoformat(),
+            "url": m.permalink or m.media_url,
+            "thumbnail": m.thumbnail_url or m.media_url
+        }
         
-    # Sort top posts by reach
-    top_posts.sort(key=lambda x: x["reach"], reverse=True)
+        if m.media_type == "STORY":
+            stories.append(post_data)
+        elif m.media_type == "VIDEO" and m.is_reel:
+            reels.append(post_data)
+        elif m.media_type == "VIDEO" and not m.is_reel:
+            # Handle older normal videos as reels/video
+            reels.append(post_data)
+        elif m.media_type == "CAROUSEL_ALBUM":
+            carousels.append(post_data)
+        else: # IMAGE
+            photos.append(post_data)
+            
+    # Sort all by reach
+    reels.sort(key=lambda x: x["reach"], reverse=True)
+    stories.sort(key=lambda x: x["reach"], reverse=True)
+    carousels.sort(key=lambda x: x["reach"], reverse=True)
+    photos.sort(key=lambda x: x["reach"], reverse=True)
     
     # Calculate simple stats
     engagement_rate = 0
@@ -252,7 +276,12 @@ async def get_dashboard_data(db: AsyncSession = Depends(get_db), current_user: U
         },
         "stats": stats,
         "chartData": chart_data,
-        "topPosts": top_posts[:3] # only return top 3
+        "content": {
+            "reels": reels[:5],
+            "stories": stories[:5],
+            "carousels": carousels[:5],
+            "photos": photos[:5]
+        }
     }
 
 @router.post("/sync")

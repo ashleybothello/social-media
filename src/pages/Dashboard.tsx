@@ -163,7 +163,18 @@ export default function Dashboard() {
     );
   }
 
-  const { profile, stats, chartData } = data;
+  const { profile, stats, chartData, content } = data;
+  
+  // Combine content for recent feed
+  const recentContent = [];
+  if (content) {
+    if (content.reels) recentContent.push(...content.reels);
+    if (content.stories) recentContent.push(...content.stories);
+    if (content.carousels) recentContent.push(...content.carousels);
+    if (content.photos) recentContent.push(...content.photos);
+  }
+  recentContent.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  const topRecent = recentContent.slice(0, 4);
 
   return (
     <div className="page-container">
@@ -344,6 +355,36 @@ export default function Dashboard() {
           <Sparkles size={14} />
           View All
         </a>
+      </motion.div>
+      {/* Recent Content */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.4 }} className="glass-card p-5 mt-6">
+        <h3 className="section-title text-base mb-4">Recent Content</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          {topRecent.length > 0 ? topRecent.map((post: any, i: number) => (
+            <a href={post.url} target="_blank" rel="noreferrer" key={i} className="flex items-center gap-3 p-3 hover:bg-[rgba(255,255,255,0.02)] border border-[var(--border-subtle)] rounded-lg transition-colors">
+              <div className="w-12 h-12 rounded overflow-hidden bg-gray-800 shrink-0 relative">
+                {post.thumbnail && <img src={post.thumbnail} alt="" className="w-full h-full object-cover" />}
+                {post.type === "STORY" && <div className="absolute inset-0 border-[3px] border-brand rounded"></div>}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium truncate mb-1" style={{ color: "var(--text-primary)" }}>{post.caption || post.type}</p>
+                <div className="flex items-center gap-2">
+                  <span className={`text-[9px] px-1.5 py-0.5 rounded-sm font-semibold uppercase ${
+                    post.type === "VIDEO" ? "bg-brand/20 text-[#a89bf8]" : 
+                    post.type === "STORY" ? "bg-amber-500/20 text-amber-500" : 
+                    post.type === "CAROUSEL_ALBUM" ? "bg-emerald-500/20 text-emerald-500" : 
+                    "bg-blue-500/20 text-blue-500"
+                  }`}>
+                    {post.type === "VIDEO" ? "Reel" : post.type === "CAROUSEL_ALBUM" ? "Carousel" : post.type}
+                  </span>
+                  <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>
+                    👁️ {formatNumber(post.reach)}
+                  </span>
+                </div>
+              </div>
+            </a>
+          )) : <p className="text-sm text-secondary">No recent content.</p>}
+        </div>
       </motion.div>
     </div>
   );

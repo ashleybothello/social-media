@@ -122,7 +122,7 @@ export default function InstagramAnalytics() {
     );
   }
 
-  const { profile, stats, chartData, topPosts } = data;
+  const { profile, stats, chartData, content } = data;
 
   return (
     <div className="page-container">
@@ -265,30 +265,103 @@ export default function InstagramAnalytics() {
         </motion.div>
       </div>
 
-      {/* Top Posts */}
-      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="glass-card p-5">
-        <h3 className="section-title text-base mb-4">Top Performing Posts</h3>
-        <div className="space-y-3">
-          {topPosts.length > 0 ? topPosts.map((post: any, i: number) => (
-            <div key={i} className="flex items-center gap-4 py-3" style={{ borderBottom: i < topPosts.length - 1 ? "1px solid var(--border-subtle)" : "none" }}>
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: post.type === "VIDEO" ? "rgba(124,110,245,0.15)" : "rgba(59,130,246,0.15)" }}>
-                {post.type === "VIDEO" ? <Film size={14} /> : post.type === "CAROUSEL_ALBUM" ? <Grid size={14} /> : <FileText size={14} />}
+      {/* Categorized Content */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+        {/* Reels */}
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="glass-card p-4">
+          <div className="flex items-center gap-2 mb-4">
+            <Film size={18} style={{ color: "#7c6ef5" }} />
+            <h3 className="font-semibold" style={{ color: "var(--text-primary)" }}>Top Reels</h3>
+          </div>
+          <div className="space-y-3">
+            {content?.reels?.length > 0 ? content.reels.map((post: any, i: number) => (
+              <a href={post.url} target="_blank" rel="noreferrer" key={i} className="flex items-center gap-3 py-2 hover:bg-[rgba(255,255,255,0.02)] rounded-lg transition-colors">
+                <div className="w-10 h-10 rounded overflow-hidden bg-gray-800 shrink-0">
+                  {post.thumbnail && <img src={post.thumbnail} alt="" className="w-full h-full object-cover" />}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium truncate mb-1" style={{ color: "var(--text-primary)" }}>{post.caption || "Reel"}</p>
+                  <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>
+                    ▶ {formatNumber(post.impressions)} plays · ❤️ {formatNumber(post.likes)}
+                  </p>
+                </div>
+              </a>
+            )) : <p className="text-xs" style={{ color: "var(--text-muted)" }}>No reels available.</p>}
+          </div>
+        </motion.div>
+
+        {/* Stories */}
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="glass-card p-4">
+          <div className="flex items-center gap-2 mb-4">
+            <Instagram size={18} style={{ color: "#f59e0b" }} />
+            <h3 className="font-semibold" style={{ color: "var(--text-primary)" }}>Top Stories</h3>
+          </div>
+          <div className="space-y-3">
+            {content?.stories?.length > 0 ? content.stories.map((post: any, i: number) => (
+              <div key={i} className="flex items-center gap-3 py-2">
+                <div className="w-10 h-10 rounded-full p-[2px] shrink-0" style={{ background: "linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)" }}>
+                  <div className="w-full h-full rounded-full overflow-hidden bg-gray-800 border-2 border-[var(--bg-base)]">
+                     {post.thumbnail && <img src={post.thumbnail} alt="" className="w-full h-full object-cover" />}
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium truncate mb-1" style={{ color: "var(--text-primary)" }}>{post.caption || "Story"}</p>
+                  <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>
+                    👁️ {formatNumber(post.reach)} reach
+                  </p>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate" style={{ color: "var(--text-primary)" }}>{post.caption || "No caption"}</p>
-                <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
-                  ❤️ {post.likes} · 💬 {post.comments} · 👁️ {formatNumber(post.reach)}
-                </p>
-              </div>
-              <span className={post.type === "VIDEO" ? "badge-brand" : "text-xs px-2 py-0.5 rounded-full"} style={post.type !== "VIDEO" ? { background: "rgba(59,130,246,0.12)", color: "#60a5fa" } : {}}>
-                {post.type}
-              </span>
-            </div>
-          )) : (
-            <p className="text-sm" style={{ color: "var(--text-muted)" }}>No posts available.</p>
-          )}
-        </div>
-      </motion.div>
+            )) : <p className="text-xs" style={{ color: "var(--text-muted)" }}>No stories active.</p>}
+          </div>
+        </motion.div>
+
+        {/* Carousels */}
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="glass-card p-4">
+          <div className="flex items-center gap-2 mb-4">
+            <Grid size={18} style={{ color: "#10b981" }} />
+            <h3 className="font-semibold" style={{ color: "var(--text-primary)" }}>Top Carousels</h3>
+          </div>
+          <div className="space-y-3">
+            {content?.carousels?.length > 0 ? content.carousels.map((post: any, i: number) => (
+              <a href={post.url} target="_blank" rel="noreferrer" key={i} className="flex items-center gap-3 py-2 hover:bg-[rgba(255,255,255,0.02)] rounded-lg transition-colors">
+                <div className="w-10 h-10 rounded overflow-hidden bg-gray-800 shrink-0 relative">
+                  {post.thumbnail && <img src={post.thumbnail} alt="" className="w-full h-full object-cover" />}
+                  <div className="absolute top-1 right-1"><Grid size={10} color="white" /></div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium truncate mb-1" style={{ color: "var(--text-primary)" }}>{post.caption || "Carousel"}</p>
+                  <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>
+                    👁️ {formatNumber(post.reach)} · ❤️ {formatNumber(post.likes)}
+                  </p>
+                </div>
+              </a>
+            )) : <p className="text-xs" style={{ color: "var(--text-muted)" }}>No carousels available.</p>}
+          </div>
+        </motion.div>
+
+        {/* Photos */}
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="glass-card p-4">
+          <div className="flex items-center gap-2 mb-4">
+            <FileText size={18} style={{ color: "#3b82f6" }} />
+            <h3 className="font-semibold" style={{ color: "var(--text-primary)" }}>Top Photos</h3>
+          </div>
+          <div className="space-y-3">
+            {content?.photos?.length > 0 ? content.photos.map((post: any, i: number) => (
+              <a href={post.url} target="_blank" rel="noreferrer" key={i} className="flex items-center gap-3 py-2 hover:bg-[rgba(255,255,255,0.02)] rounded-lg transition-colors">
+                <div className="w-10 h-10 rounded overflow-hidden bg-gray-800 shrink-0">
+                  {post.thumbnail && <img src={post.thumbnail} alt="" className="w-full h-full object-cover" />}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium truncate mb-1" style={{ color: "var(--text-primary)" }}>{post.caption || "Photo"}</p>
+                  <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>
+                    ❤️ {formatNumber(post.likes)} · 💬 {formatNumber(post.comments)}
+                  </p>
+                </div>
+              </a>
+            )) : <p className="text-xs" style={{ color: "var(--text-muted)" }}>No photos available.</p>}
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 }
